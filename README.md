@@ -1,5 +1,5 @@
 # unix2tcp
-This program relays data between a Unix Domain Socket source and an address (hostname:port) destination.
+This Docker image relays data between a Unix Domain Socket source and an address (hostname:port) destination.
 
 ## Example
 Create and accept connections on /tmp/http.sock and relay them to 127.0.0.1 port 80:
@@ -7,9 +7,9 @@ Create and accept connections on /tmp/http.sock and relay them to 127.0.0.1 port
 ./unix2tcp /tmp/http.sock 127.0.0.1:80
 ```
 
-For reference, this can also be achieved with the following socat command:
+This is a wrapper around the following socat command:
 ```
-socat UNIX-CONNECT:/tmp/http.sock TCP-LISTEN:80
+socat UNIX-LISTEN:/tmp/http.sock,fork TCP-CONNECT:127.0.0.1:80
 ```
 
 ## Why?
@@ -20,17 +20,9 @@ My use case:
 - Application listens over port, unix2tcp listens over unix domain socket and relays data
 - Result: port is not exposed to host
 
-However, note that this is easily achievable with socat in a Docker container.
-
-## Architecture Overview
-- Main thread accepts connections from Unix Socket
-- Create new thread for every new connection
-- Use poll to detect readable socket, read data from socket, and write this data to the other socket
-
 ### Downsides/Issues of this approach
 - Source IPs are not retained
 - Not as clean as ip2unix
 
 ## Notable projects in this area
-- socat
 - ip2unix

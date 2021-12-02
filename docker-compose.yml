@@ -1,15 +1,26 @@
-version: '3'
+version: "3"
+
 services:
-  nginx:
-    image: "nginx:latest"
-    restart: on-failure
   unix2tcp:
     build:
-      context: .
-    command: ["/run/sock/nginx.sock", "nginx:80"]
+        context: .
+    command: ["/run/sock/freshrss.sock", "freshrss:80"]
     volumes:
       - ./sock:/run/sock
     links:
-      - web
+      - freshrss
     depends_on:
-      - web
+      - freshrss
+
+  freshrss:
+    image: freshrss/freshrss:latest-arm
+    restart: on-failure
+    container_name: freshrss_container
+    ports:
+      - "127.0.0.1:8080:80"
+    volumes:
+      - ./data/freshrss_data:/var/www/FreshRSS/data
+      - ./data/freshrss_extensions:/var/www/FreshRSS/extensions
+    environment:
+      - CRON_MIN=*/10
+      - TZ=Australia/Melbourne
