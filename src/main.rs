@@ -8,7 +8,7 @@ use std::{
     net::ToSocketAddrs,
     os::unix::net::UnixListener,
     path::Path,
-    process, thread,
+    process, thread, fmt,
 };
 
 fn main() -> std::io::Result<()> {
@@ -90,6 +90,21 @@ fn redirect_data(
     }
 }
 
+
+#[derive(Debug)]
+struct ExitError;
+impl std::error::Error for ExitError {}
+impl fmt::Display for ExitError {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "Read returned 0, exiting")
+    }
+}
+impl ExitError {
+    fn new() -> ExitError {
+        ExitError{}
+    }
+}
+
 fn redirect_data_sockets(
     reading_socket: &mut dyn Read,
     writing_socket: &mut dyn Write,
@@ -101,7 +116,7 @@ fn redirect_data_sockets(
         match reading_socket.read(&mut buf) {
             Ok(read_len) => {
                 if read_len == 0 {
-                    return Ok(());
+                    return Err(Box::new(ExitError::new()));
                 }
                 // Write until all written
                 let mut written = 0;
