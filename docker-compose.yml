@@ -1,0 +1,15 @@
+version: '3'
+services:
+  nginx:
+    image: "nginx:latest"
+    restart: on-failure
+  unix2tcp:
+    build:
+      context: .
+    command: ["/run/sock/nginx.sock", "nginx:80"]
+    volumes:
+      - ./sock:/run/sock
+    links:
+      - web
+    depends_on:
+      - web

@@ -1,0 +1,13 @@
+[package]
+name = "unix2tcp"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+mio = { version = "0.8", features = ["os-poll", "net"] }
+
+[profile.release]
+opt-level = 3
+debug = false
+lto = true
+panic = 'unwind'
