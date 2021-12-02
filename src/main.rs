@@ -100,6 +100,9 @@ fn redirect_data_sockets(
         // Read into buffer
         match reading_socket.read(&mut buf) {
             Ok(read_len) => {
+                if read_len == 0 {
+                    return Ok(());
+                }
                 // Write until all written
                 let mut written = 0;
                 while read_len != written {
