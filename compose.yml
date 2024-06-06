@@ -1,10 +1,8 @@
-version: "3"
-
 services:
   unix2tcp:
     build:
-        context: .
-    command: ["/run/sock/freshrss.sock", "freshrss:80"]
+      context: .
+    command: ["/run/sock/freshrss.sock", "freshrss:80", "mode=660,user=1000,group=1000"]
     volumes:
       - ./sock:/run/sock
     links:
@@ -13,11 +11,9 @@ services:
       - freshrss
 
   freshrss:
-    image: freshrss/freshrss:latest-arm
+    image: freshrss/freshrss:latest
     restart: on-failure
     container_name: freshrss_container
-    ports:
-      - "127.0.0.1:8080:80"
     volumes:
       - ./data/freshrss_data:/var/www/FreshRSS/data
       - ./data/freshrss_extensions:/var/www/FreshRSS/extensions
